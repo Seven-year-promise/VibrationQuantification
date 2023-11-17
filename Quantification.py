@@ -129,8 +129,8 @@ def larva_tracking(video, model_path):
 
 class BehaviorQuantify:
     def __init__(self, im_shape, model_path):
-        self.unet_test = UNetTestTF()
-        self.unet_test.model.load_graph_frozen(model_path=model_path)
+        #self.unet_test = UNetTestTF()
+       # self.unet_test.model.load_graph_frozen(model_path=model_path)
 
         self.video = None
         self.larva_centers = []
@@ -143,7 +143,7 @@ class BehaviorQuantify:
         self.larva_tracker2 = ParticleFilter(50)
 
         self.purlse_frame_index = 0
-        self.light_area = [0,0,50,50] # x1, y1, x2, y2
+        self.light_area = [50,50,125,125] # x1, y1, x2, y2
 
         self.RG = RegionGrow()
 
@@ -167,8 +167,20 @@ class BehaviorQuantify:
         if self.video is None:
             print("please load the video first")
         else:
-            for frame in self.video:
-                light_crop = frame[self.light_ares[1]:self.light_area[3], self.light_area[0]:self.light_area[2]]
+            last_light_hist = 0
+            for i, frame in enumerate(self.video):
+                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                light_crop = frame[self.light_area[1]:self.light_area[3], self.light_area[0]:self.light_area[2]]
+                light_hist = cv2.calcHist([light_crop], [0], None, [10], [0, 256])
+                #cv2.imshow("light crop", light_crop)
+                #print(light_hist)
+                if i > 0:
+                    num_light_points = np.sum(np.abs(light_hist-last_light_hist))
+
+                    if num_light_points > 1500:
+                        self.purlse_frame_index = i
+                        break
+                last_light_hist = light_hist
 
     def quantification_init(self):
         self.larva_centers = []
@@ -539,6 +551,8 @@ if __name__ == '__main__':
 
         begin_time = time.clock()
         behav_quantify.load_video(video)
+        behav_quantify.get_purlse_frame()
+        """
         behav_quantify.quantification_init()
         t_l, c_m, cpt, t_r, d_m = behav_quantify.quantify(save_path=config.QUANTIFY_SAVE_PATH, video_name=v_p.name)
         end_time = time.clock()
@@ -550,6 +564,7 @@ if __name__ == '__main__':
                                    quotechar='|', quoting=csv.QUOTE_MINIMAL)
             valwriter.writerow([v_p.parent.name, v_p.name, t_l, c_m, cpt, t_r, d_m])
         cv2.destroyAllWindows()
+        """
 
     """
     #date = ["20210522-4compounds/"] #["20210129/"]#["20210414/", "20210415-1/", "20210415-2/", "20210416-1/", "20210416-2/"]
