@@ -7,8 +7,14 @@
 ```
 docker load -i vibration0_2.tar`
 docker run -it -v {your absolute path please}/VibrationResponse:/home/data vibration0_2:no_code
-cmd:conda activate vibration
+conda activate vibration
 python Quantification.py
 ```
 
 ###  The results will be at `./QuantificationResults`
+### 4. exit
+
+```
+exit
+```
+ 
