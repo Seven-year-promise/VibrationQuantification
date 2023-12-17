@@ -12,7 +12,7 @@ python Quantification.py
 ```
 
 ###  The results will be at `./QuantificationResults`
-### 4. exit
+### 4. Exit by running
 
 ```
 exit
