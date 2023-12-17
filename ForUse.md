@@ -1,5 +1,5 @@
 ## Install visual studio code
-(link)[https://code.visualstudio.com/download]
+[link](https://code.visualstudio.com/download)
 
 
 `docker load -i vibration0_2.tar`
