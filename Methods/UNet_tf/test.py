@@ -41,15 +41,22 @@ class UNetTestTF:
             cv2.imwrite("./Methods/Methods_saved/ori_im.png", im)
         gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
         self.ori_im_gray = gray
-        _, (well_x, well_y, _), im_well = well_detection(im, gray)
+        _, (well_x, well_y, well_r), im_well = well_detection(im, gray)
         im_well = cv2.cvtColor(im_well, cv2.COLOR_BGR2GRAY)
         if DEBUG:
             cv2.imwrite("./Methods/Methods_saved/im_well.png", im_well)
-        self.x_min = int(well_x - self.conf.im_size / 2)
-        self.x_max = int(well_x + self.conf.im_size / 2)
-        self.y_min = int(well_y - self.conf.im_size / 2)
-        self.y_max = int(well_y + self.conf.im_size / 2)
+        self.x_min = int(well_x - well_r)
+        self.x_max = int(well_x + well_r) #self.conf.im_size / 2)
+        self.y_min = int(well_y - well_r)
+        self.y_max = int(well_y + well_r)
+
+        if self.x_max > self.conf.ori_size:
+            self.x_max = self.conf.ori_size
+        if self.y_max > self.conf.ori_size:
+            self.y_max = self.conf.ori_size
+
         im_block = im_well[self.y_min:self.y_max, self.x_min:self.x_max]
+        im_block = cv2.resize(src=im_block, dsize=(self.conf.im_size, self.conf.im_size), fx=0, fy=0, interpolation=cv2.INTER_CUBIC)
 
         if DEBUG:
             cv2.imwrite("./Methods/Methods_saved/im_well_block.png", im_block)
@@ -79,7 +86,6 @@ class UNetTestTF:
         tuned_binary = np.zeros(erosion.shape, np.uint8)
         for fblob in final_blobs:
             tuned_binary[fblob[:, 0], fblob[:, 1]] = 1
-
         return tuned_binary
 
     def select_big_blobs(self, binary, size = 44):
@@ -102,30 +108,21 @@ class UNetTestTF:
         out_needle = np.zeros((self.conf.ori_size, self.conf.ori_size), np.uint8)
         out_fish = np.zeros((self.conf.ori_size, self.conf.ori_size), np.uint8)
 
-        heatmap_visual = pred[:, :, 0]
-        needle_binary = np.zeros(heatmap_visual.shape, np.uint8)
-        needle_binary[np.where(heatmap_visual>threshold)] = 1
-        if DEBUG:
-            cv2.imwrite("./Methods/Methods_saved/needle_binary.png", needle_binary*255)
-        #needle_binary = self.blob_tune(needle_binary)
-        out_needle[self.y_min:self.y_max, self.x_min:self.x_max] = needle_binary
-
-        #print(needle_binary, needle_binary.shape)
-        #cv2.imshow("needle", needle_binary)
-        #cv2.waitKey(0)
-
         heatmap_visual = pred[:, :, 1]
         fish_binary = np.zeros(heatmap_visual.shape, np.uint8)
         fish_binary[np.where(heatmap_visual > threshold)] = 1
         if DEBUG:
             cv2.imwrite("./Methods/Methods_saved/fish_binary.png", fish_binary*255)
 
+        fish_binary = cv2.resize(src=fish_binary,
+                                 dsize=(self.x_max-self.x_min, self.y_max-self.y_min),
+                                 fx=0, fy=0, interpolation=cv2.INTER_CUBIC)
         out_fish[self.y_min:self.y_max, self.x_min:self.x_max] = fish_binary
 
         optimized_binary, fish_blobs = self.select_big_blobs(out_fish, size=size)
 
         if DEBUG:
-            cv2.imwrite("./Methods/Methods_saved/optimized_binary.png", optimized_binary[self.y_min:self.y_max, self.x_min:self.x_max]*255)
+            cv2.imwrite("./Methods/Methods_saved/optimized_binary.png", optimized_binary*255)
         #print(fish_binary, fish_binary.shape)
         #cv2.imshow("fish", out_binary*127)
         #cv2.waitKey(0)

@@ -601,11 +601,11 @@ class ParticleFilter:
         diff_im = np.zeros_like(new_gray, dtype=uint8)
         difference = np.abs(bg - new_gray)
 
-
         threshold = 10 #np.sum(np.sum(difference)) / (new_gray.shape[0] + new_gray.shape[1])
         diff_im[difference < threshold] = 0
         diff_im[difference > threshold] = 255
         diff_im = cv2.medianBlur(diff_im, 3)
+        #cv2.imshow("diff_im", diff_im)
         #ret, th = cv2.threshold(new_gray, 130, 255, cv2.THRESH_BINARY)
         #binary = np.zeros(th.shape, np.uint8)
         #binary[np.where(th == 0)] = 255
@@ -678,7 +678,6 @@ class ParticleFilter:
         self.last_boxes = self.new_boxes
         self.new_boxes = new_boxes0
         #print(self.boxes0)
-        s_thre = 0.3
         self.resampling(s_thre, 7)
         #new_gray_particles = new_gray.copy()
         #new_gray_particles = draw_particles(new_gray_particles, self.particles)

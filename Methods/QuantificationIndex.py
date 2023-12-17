@@ -21,35 +21,18 @@ class QuantificationIndex:
     compute the quantification indexes, latency time (t_l), C-Shape Radius Average (r_ca), Moving distance (d_m), response time (t_r)
     importance time points: t1: touch apllied, t2: response begins, t3: response stops
     """
-    def __init__(self, n_l_dis_thre, move_thre):
-        self.needle_larva_dis_thre = n_l_dis_thre
+    def __init__(self, move_thre):
         self.move_thre = move_thre
         self.needle_points = None
         self.larva_pointss = None
         self.larva_patchess = None
         self.num_diffss = []
-        self.larva_touched = 0
-        self.t1 = 0
+        self.larva_selected = 0
         self.t2 = 0
         self.t3 = 0
         self.frame_length = 0
         self.ComputeCur = ComputeCurvature(degree=3)
 
-    def compute_t1(self, larva_first_centers):
-        """
-        compute the frame time for touching applied
-        :return: the time point of t1, or -1 if not touched successfully
-        """
-        found_flag = False
-        p_t0 = larva_first_centers[self.larva_touched]
-        for t, (n_p, l_p) in enumerate(zip(self.needle_points, self.larva_pointss)):
-            d = math.sqrt((n_p[0] - p_t0[0]) ** 2 + (n_p[1] - p_t0[1]) ** 2)
-            if d < self.needle_larva_dis_thre:
-                found_flag = True
-                return t
-
-        if not found_flag:
-            return -1
 
     def compute_t2(self):
         """
@@ -74,8 +57,8 @@ class QuantificationIndex:
         # according to the moving pixels
         found_flag = False
 
-        for t in range(self.t1, self.frame_length):
-            num_diff = self.num_diffss[t][self.larva_touched]
+        for t in range(self.frame_length):
+            num_diff = self.num_diffss[t][self.larva_selected]
             if num_diff > self.move_thre:
                 found_flag = True
                 return t
@@ -111,7 +94,7 @@ class QuantificationIndex:
         # check from the last one
         for i in range(1, self.frame_length - self.t2):
             t = self.frame_length - i
-            num_diff = self.num_diffss[t - 1][self.larva_touched]
+            num_diff = self.num_diffss[t - 1][self.larva_selected]
             if num_diff > self.move_thre:
                 found_flag = True
                 return t - 1
@@ -145,11 +128,11 @@ class QuantificationIndex:
         cures = []
         # print(all_points)
         for i in range(self.t2, self.t3 + 1):
-            p1 = self.larva_pointss[i][self.larva_touched]
-            p2 = self.larva_pointss[i + 1][self.larva_touched]
+            p1 = self.larva_pointss[i][self.larva_selected]
+            p2 = self.larva_pointss[i + 1][self.larva_selected]
             d = math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
             distance += d
-            l_patch = self.larva_patchess[i][self.larva_touched]
+            l_patch = self.larva_patchess[i][self.larva_selected]
             cur = self.compute_curvature(l_patch)
             if (cur >= 0) and (cur != "nan"):
                 cures.append(cur)
@@ -161,7 +144,7 @@ class QuantificationIndex:
         cur_peak_time = np.argmax(np.array(cures))
         return distance, cur_max, cur_peak_time
 
-    def get_indexes(self, larva_first_centers, needle_points, larva_pointss, larva_patchess, num_diffss, larva_touched):
+    def get_indexes(self, larva_first_centers, larva_pointss, larva_patchess, num_diffss):
         """
 
         :param needle_points:
@@ -170,26 +153,28 @@ class QuantificationIndex:
         :param larva_touched:
         :return:
         """
-        self.needle_points = needle_points
         self.larva_pointss = larva_pointss
         self.larva_patchess = larva_patchess
         self.num_diffss = num_diffss
-        self.larva_touched = larva_touched
-        self.frame_length = len(self.needle_points)
-        self.t1 = self.compute_t1(larva_first_centers)
-        if self.t1 < 0:
-            return None, 0, 0, 0, 0
-        else:
+        self.frame_length = len(self.larva_pointss)
+
+        num_larvae = len(larva_first_centers)
+
+        index_list = []
+        for n_l in range(num_larvae):
+            self.larva_selected = n_l
+
             self.t2 = self.compute_t2()
             if self.t2 < 0:
-                return None, 0, 0, 0, 0
+                index_list.append([None, 0, 0, 0, 0])
             else:
                 self.t3 = self.compute_t3()
 
-                t_l = (self.t2 - self.t1 + 1) / 1000.0
+                t_l = (self.t2 + 1) / 1000.0
                 t_r = (self.t3 - self.t2 + 1) / 1000.0
 
                 d_m, c_m, cpt = self.compute_c_m_d_m()
                 cpt /= 1000.0
 
-                return t_l, c_m, cpt, t_r, d_m
+                index_list.append([t_l, c_m, cpt, t_r, d_m])
+        return index_list

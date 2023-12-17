@@ -26,7 +26,9 @@ tensorflow-gpu == 1.15.0
 
 
 
-tensorflow-gpu==1.15.0
+tensorflow==1.15.0
 matplotlib==3.2.1
-opencv-contrib-python==3.4.2.16
 scikit-image==0.18.1
+scikit-learn==0.23.1
+pandas==1.0.4
+opencv-python==4.5.3.56

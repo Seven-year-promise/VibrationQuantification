@@ -7,9 +7,10 @@ def well_detection(im, gray, threshold = 50):
     rows = gray.shape[0]
     circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, rows / 5,
                                param1=220, param2=30,
-                               minRadius=95, maxRadius=105)
-    #print(circles)
+                               minRadius=180, maxRadius=230)
+
     '''
+    print(circles)
     #muted when training
     if circles is not None:
         circles_int = np.uint16(np.around(circles))
@@ -22,19 +23,20 @@ def well_detection(im, gray, threshold = 50):
             cv2.circle(gray, center, radius, (0, 255, 0), 3)
 
     cv2.imshow("detected circles", gray)
-    cv2.waitKey(1000)
+    cv2.waitKey(0)
     '''
+
     if circles is not None:
         well_centerx = np.uint16(np.round(np.average(circles[0, :, 0])))
         well_centery = np.uint16(np.round(np.average(circles[0, :, 1])))
-        well_radius = 110 #np.uint16(np.round(np.max(circles[0, :, 2])))
+        well_radius = 200 #np.uint16(np.round(np.max(circles[0, :, 2])))
         #return True, (well_centerx, well_centery, 110)
 
 
     else:
-        well_centerx = 240
-        well_centery = 240
-        well_radius = 110
+        well_centerx = 275
+        well_centery = 275
+        well_radius = 200
         #return False, (240, 240, 110)
 
     # first rough mask for well detection
@@ -62,6 +64,7 @@ def well_detection(im, gray, threshold = 50):
     #cv2.imshow("detected circles", im_closing_inv)
     #cv2.waitKey(1000)
     '''
+
     return True, (well_centerx, well_centery, well_radius), gray_masked_color
 
 def well_detection_strong(im, gray, threshold = 50):
@@ -71,8 +74,8 @@ def well_detection_strong(im, gray, threshold = 50):
     # gray = cv2.medianBlur(gray, 5)
     rows = gray.shape[0]
     circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1, rows / 5,
-                               param1=240, param2=50,
-                               minRadius=95, maxRadius=105)
+                               param1=220, param2=30,
+                               minRadius=180, maxRadius=230)
     #print(circles)
     """
     muted when training
@@ -91,14 +94,14 @@ def well_detection_strong(im, gray, threshold = 50):
     if circles is not None:
         well_centerx = np.uint16(np.round(np.average(circles[0, :, 0])))
         well_centery = np.uint16(np.round(np.average(circles[0, :, 1])))
-        well_radius = 115 #np.uint16(np.round(np.average(circles[0, :, 2])))
+        well_radius = 200 #np.uint16(np.round(np.average(circles[0, :, 2])))
         #return True, (well_centerx, well_centery, 110)
 
 
     else:
-        well_centerx = 240
-        well_centery = 240
-        well_radius = 115
+        well_centerx = 270
+        well_centery = 270
+        well_radius = 200
         #return False, (240, 240, 110)
 
     # first rough mask for well detection
@@ -109,10 +112,10 @@ def well_detection_strong(im, gray, threshold = 50):
 
     # second fine-tuned mask
     ret, th = cv2.threshold(gray_masked, threshold, 255, cv2.THRESH_BINARY)
-    kernel = np.ones((100, 100), dtype=np.uint8)
+    kernel = np.ones((15, 15), dtype=np.uint8)
     closing = cv2.morphologyEx(th, cv2.MORPH_CLOSE, kernel)
-    kernel = np.ones((55, 55), dtype=np.uint8)
-    median = cv2.medianBlur(closing, 55)
+    kernel = np.ones((7, 7), dtype=np.uint8)
+    median = cv2.medianBlur(closing, 7)
     #cv2.imshow("opening", median)
     #cv2.waitKey(1000)
     im_median = cv2.bitwise_and(im, im, mask=median)
