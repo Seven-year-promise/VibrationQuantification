@@ -1,16 +1,14 @@
-## Install visual studio code
-[link](https://code.visualstudio.com/download)
+## 1. Install visual studio code (VS code) with this [link](https://code.visualstudio.com/download)
 
+## 2. Open VS code and install the docker extensions (click the fifth button on the left, called `Extensions`, and search `docker`, click the first one and install on the right)
 
-`docker load -i vibration0_2.tar`
-    
-    
-2. 
-cmd: docker run -it -v /Volumes/VideoEditor_KKM/VibrationDocker/VibrationResponse:/home/data vibration0_2:no_code
+## 3. Put the data to `./VibrationData`, Open a `terminal` from the top of VS code and run the following codes one by one
 
-3.
+```
+docker load -i vibration0_2.tar`
+docker run -it -v /Volumes/VideoEditor_KKM/VibrationDocker/VibrationResponse:/home/data vibration0_2:no_code
 cmd:conda activate vibration
+python Quantification.py
+```
 
-
-4.
-cmd: python Quantification.py
+##  The results will be at `./QuantificationResults`
