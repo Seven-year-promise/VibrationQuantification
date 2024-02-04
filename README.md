@@ -1,42 +1,23 @@
-## Quantification Platform for Touch Response of Zebrafish Larvae using Machine Learning
+## Download and install the miniconda https://docs.conda.io/projects/miniconda/en/latest/miniconda-install.html
+## Create a new environment
 
-- Paper link: https://publikationen.bibliothek.kit.edu/1000140195
+- open a cmd
+- conda create -n vibration python==3.7.6
+- conda activate vibration
+  
+## Install the following libraries:
 
-## The functions of this code
-
-- Quantification of the data collected by [Touch-Response data acquisition platforms](https://github.com/Seven-year-promise/MultiFishTouchResponse);
-- Visualization of the quantification results.
-
-## This code is implemented by Python, and uses the following (parts) libraries:
-
-- tensorflow-gpu==1.15.0
-- torch=1.4.0
-- scikit-learn==0.23.1
-- scipy==1.6.0
-- seaborn==0.12.2
-- pyqt5-sip==4.19.18
+- pip install tensorflow-gpu==1.15.0
+- pip install torch=1.4.0
+- pip install scikit-learn==0.23.1
+- pip install scipy==1.6.0
+- pip install seaborn==0.12.2
+- pip install pyqt5-sip==4.19.18
 
 ## How to use the repostory
 
-- Install the environment according to `environment.yml`.
-- Change the path of the data and the path to save the quantification results in `config.py`: `QUANTIFY_DATA_PATH`, and `QUANTIFY_SAVE_PATH`.
 - DO the quantification by
 
     `python quantification.py`
     
-- Visulization of the results can be done by `./QuantificationResults/FigureDraw.py`
-- Pattern analysis of the quantification reusults can be done by `./HTS/`
-
-
-## In case of citing our work
-
-```
-@inproceedings{wang2021quantification,
-  title={Quantification Platform for Touch Response of Zebrafish Larvae using Machine Learning},
-  author={Wang, Yanke and Pylatiuk, Christian and Mikut, Ralf and Peravali, Ravindra and Reischl, Markus},
-  booktitle={PROCEEDINGS 31. WORKSHOP COMPUTATIONAL INTELLIGENCE},
-  volume={25},
-  pages={37},
-  year={2021}
-}
-```
+- if any libraries (modules) are missing, install them by `pip install XXXXX`
