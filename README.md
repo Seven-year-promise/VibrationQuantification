@@ -18,6 +18,6 @@
 
 - DO the quantification by
 
-    `python quantification.py`
+    `python Quantification.py`
     
 - if any libraries (modules) are missing, install them by `pip install XXXXX`
