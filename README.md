@@ -14,7 +14,7 @@
 - `pip install pandas==1.0.4`
 - `pip install opencv-python==4.5.3.56`
 
-For any other packages needed, you can refer to https://github.com/Seven-year-promise/VibrationQuantification/blob/master/requirements, and you can also install by simply running
+For any other packages needed, you can refer to [https://github.com/Seven-year-promise/VibrationQuantification/blob/master/requirements](https://github.com/Seven-year-promise/VibrationQuantification/blob/master/requirements.txt), and you can also install by simply running
 `pip install -r requirements.txt`.
 
 ## How to use the repostory
