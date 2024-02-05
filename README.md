@@ -2,17 +2,17 @@
 ## Create a new environment
 
 - Firstly, open a cmd
-- `conda create -n vibration python==3.7.6`
+- `conda create -n vibration python==3.7.0
 - `conda activate vibration`
   
 ## Install the following libraries:
 
-- `pip install tensorflow-gpu==1.15.0`
-- `pip install torch=1.4.0`
+- `pip install tensorflow==1.15.0`
+- `pip install matplotlib==3.2.1`
+- `pip install scikit-image==0.18.1`
 - `pip install scikit-learn==0.23.1`
-- `pip install scipy==1.6.0`
-- `pip install seaborn==0.12.2`
-- `pip install pyqt5-sip==4.19.18`
+- `pip install pandas==1.0.4`
+- `pip install opencv-python==4.5.3.56`
 
 ## How to use the repostory
 
